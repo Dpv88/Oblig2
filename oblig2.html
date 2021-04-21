@@ -1,0 +1,110 @@
+<body>
+  <div id="content"></div>
+
+  <script>
+    // hjelpevariable for både view og controller
+    var contentDiv = document.getElementById('content');
+    
+
+    // model
+    let numbers = [7, 3, 1, 5, 8, 3];
+    let stolpeNummer = 'ingen stolpe er valgt';
+    let Knapp = 'disabled'
+      // view
+
+    show();
+
+    function barBorder(barNo) {
+      stolpeNummer = barNo;
+      chosenBar = stolpeNummer;
+      if (chosenBar == stolpeNummer) {
+      }
+      show();
+    } //dette er funksjonen for å endre border på stolpe
+
+    function show() {
+      let svgInnerHtml = ''; //variabel som lager stolper
+      for (let i = 0; i < numbers.length; i++) {
+        //gir en verdi til i
+        let barNo = i + 1; //gir en verdi til barNo (barNo = nummer på stolpe)
+        let border = 0; //sier at det ikke skal være noen border på noen av stolpene
+        if (barNo == stolpeNummer) {
+          border = 1;
+        }
+        svgInnerHtml += createBar(numbers[i], i + 1, border);
+      }
+      contentDiv.innerHTML = `
+            <svg id="chart" width="500" viewBox="0 0 80 60">
+                ${svgInnerHtml}
+            </svg><br/>
+            Valgt stolpe: <i id="textdisplay">${stolpeNummer}</i>
+            <br />
+            Verdi:
+            <input id="stolpeVerdi" type="number" min="1" max="10" oninput="inputValue = this.value" />
+            <button id="leggTilStolpe" onclick=addStolpe()>Legg til stolpe</button>
+            <button ${Knapp} id="endreStolpe" onclick=endrestolpe() >Endre valgt stolpe</button><br />
+            <button ${Knapp} id="fjernStolpe" onclick=removeBar() >Fjerne valgt stolpe</button>
+            `;
+    }
+
+    function createBar(number, barNo, border) {
+      const width = 8;
+      const spacing = 2;
+      let x = (barNo - 1) * (width + spacing);
+      let height = number * 10;
+      let y = 60 - height;
+      let color = calcColor(1, 10, barNo);
+      return `<rect onclick="barBorder(${barNo})" width="${width}" height="${height}"
+                            x="${x}" y="${y}" fill="${color}"
+                            stroke-width="${border}"
+                            stroke="black";></rect>`;
+      show();
+    }
+
+    function calcColor(min, max, val) {
+      var minHue = 240,
+        maxHue = 0;
+      var curPercent = (val - min) / (max - min);
+      var colString =
+        'hsl(' + (curPercent * (maxHue - minHue) + minHue) + ',100%,50%)';
+      return colString;
+    }
+
+    // controller (ingenting her ennå)
+      function barBorder(barNo) {
+          if (barNo == stolpeNummer) {
+              stolpeNummer = 'ingen stolpe er valgt';
+              Knapp = 'disabled';
+          }
+          else {
+              stolpeNummer = barNo;
+              Knapp = '';
+          }
+          show()
+      }
+      function removeBar() {
+          numbers.splice(stolpeNummer - 1, 1);
+          show();
+      }
+
+      function endrestolpe() {
+          if (inputValue < 1 || inputValue > 10) {
+              alert('ugyldig nummer');
+              return inputValue;
+          }
+          numbers.splice(stolpeNummer - 1, 1, inputValue);
+          show();
+      }
+
+      function addStolpe() {
+          if (inputValue < 1 || inputValue > 10) {
+              alert('ugyldig nummer');
+              return inputValue;
+          }
+          numbers.push(inputValue);
+          show();
+      }
+
+  </script>
+</body>
+<
